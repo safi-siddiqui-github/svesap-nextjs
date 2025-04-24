@@ -1,5 +1,6 @@
 'use server';
 
+import { pathConstants } from '@/constants/pathConstants';
 import { AxiosResponseType, ResponseResultType } from '@/types/responseTypes';
 import axiosUtils from '@/utils/axiosUtils';
 import { loginValidation } from '@/validations/authValidations';
@@ -11,7 +12,7 @@ export const loginAction = async (
 ): Promise<ResponseResultType> => {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-  const old = { email, password };
+  const old: ResponseResultType['old'] = { email, password };
 
   const validatedFields = loginValidation.safeParse({
     email,
@@ -27,7 +28,7 @@ export const loginAction = async (
     };
   }
 
-  let res = await axiosUtils.post('/login', {
+  let res = await axiosUtils.post(pathConstants.api.post.login, {
     email,
     password,
   });
@@ -77,7 +78,7 @@ export const logoutAction = async (
   let res;
 
   try {
-    res = await axiosUtils.post('/logout');
+    res = await axiosUtils.post(pathConstants.api.post.logout);
   } catch (error) {
     console.log(error);
   }

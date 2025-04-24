@@ -1,4 +1,4 @@
-import { UserType } from './modelTypes';
+import { CategoryType, UserType } from './modelTypes';
 
 export type AxiosResponseType = {
   success?: boolean;
@@ -8,15 +8,27 @@ export type AxiosResponseType = {
 };
 
 type Errors = {
+  id?: string[];
   email?: string[];
   password?: string[];
+  name?: string[];
+  description?: string[];
 };
 
 type Data = {
   token?: string;
   user?: UserType;
+  category?: CategoryType;
+  categories?: CategoryType[];
 };
 
 export type ResponseResultType = {
-  old?: { email: string; password: string };
+  old?: Old;
 } & AxiosResponseType;
+
+type Old = {
+  email?: string;
+  password?: string;
+  name?: string;
+  description?: string;
+};
