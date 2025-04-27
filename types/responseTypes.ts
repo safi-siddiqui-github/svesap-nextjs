@@ -1,3 +1,4 @@
+import { ErrorOption } from 'react-hook-form';
 import { CategoryType, UserType } from './modelTypes';
 
 export type AxiosResponseType = {
@@ -7,12 +8,31 @@ export type AxiosResponseType = {
   errors?: Errors;
 };
 
+export type ResponseResultType = {
+  old?: Old;
+} & AxiosResponseType;
+
 type Errors = {
-  id?: string[];
-  email?: string[];
-  password?: string[];
-  name?: string[];
-  description?: string[];
+  id?: string;
+  email?: string;
+  password?: string;
+  name?: string;
+  description?: string;
+  image?: string;
+  // id?: string[];
+  // email?: string[];
+  // email?: ErrorOption;
+  // password?: string[];
+  // name?: string[];
+  // description?: string[];
+  // image?: string[];
+};
+
+type Old = {
+  email?: string;
+  password?: string;
+  name?: string;
+  description?: string;
 };
 
 type Data = {
@@ -22,13 +42,3 @@ type Data = {
   categories?: CategoryType[];
 };
 
-export type ResponseResultType = {
-  old?: Old;
-} & AxiosResponseType;
-
-type Old = {
-  email?: string;
-  password?: string;
-  name?: string;
-  description?: string;
-};

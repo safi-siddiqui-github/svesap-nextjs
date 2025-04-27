@@ -1,3 +1,4 @@
+import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -9,5 +10,10 @@ export default function GuestLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <main className="">{children}</main>;
+  return (
+    <main className="">
+      {children}
+      <Toaster />
+    </main>
+  );
 }

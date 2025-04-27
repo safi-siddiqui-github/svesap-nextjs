@@ -1,21 +1,25 @@
 'use client';
 
 import { createCategoryAction } from '@/actions/categoryActions';
-import ButtonComponent from '@/components/button/ButtonComponent';
+import FileInputComponent from '@/components/input/FileInputComponent';
 import TextInputComponent from '@/components/input/TextInputComponent';
+import { Button } from '@/components/ui/button';
+import LoadingComponent from '@/components/ui/LoadingComponent';
 import { pathConstants } from '@/constants/pathConstants';
 import { useRouter } from 'next/navigation';
-import { useActionState, useEffect } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 
 export default function Page() {
   const [state, formAction, pending] = useActionState(createCategoryAction, {});
   const router = useRouter();
+  const [isP, setIsP] = useState(pending);
 
   useEffect(() => {
     if (state?.success) {
       router.push(pathConstants.categories.read);
     }
-  }, [state, router]);
+    setIsP(pending);
+  }, [state, router, setIsP, pending]);
 
   return (
     <div className="flex flex-col p-4 gap-4 w-full">
@@ -38,12 +42,14 @@ export default function Page() {
           error={state.errors?.description}
         />
 
-        <ButtonComponent
-          name="Submit"
-          width="fit"
-          type="submit"
-          pending={pending}
+        <FileInputComponent
+          id="image"
+          label="Image"
+          name="image"
+          error={state.errors?.image}
         />
+
+        <Button type="submit">{isP ? <LoadingComponent /> : 'Submit'}</Button>
       </form>
     </div>
   );

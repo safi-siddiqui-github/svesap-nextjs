@@ -1,4 +1,5 @@
 import LogoutComponent from '@/components/ui/LogoutComponent';
+import { Toaster } from '@/components/ui/sonner';
 import { pathConstants } from '@/constants/pathConstants';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -25,6 +26,8 @@ export default function AuthLayout({
       </div>
 
       {children}
+
+      <Toaster />
     </main>
   );
 }

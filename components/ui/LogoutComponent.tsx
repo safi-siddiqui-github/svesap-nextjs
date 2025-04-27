@@ -3,14 +3,17 @@
 import { logoutAction } from '@/actions/authActions';
 import { pathConstants } from '@/constants/pathConstants';
 import { useAdminLoginCookie } from '@/utils/zustandUtils';
+import { LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useActionState, useEffect } from 'react';
-import ButtonComponent from '../button/ButtonComponent';
+import { useActionState, useEffect, useState } from 'react';
+import { Button } from './button';
+import LoadingComponent from './LoadingComponent';
 
 export default function LogoutComponent() {
   const { updateToken, updateUser } = useAdminLoginCookie();
   const router = useRouter();
   const [state, formAction, pending] = useActionState(logoutAction, {});
+  const [isP, setIsP] = useState(pending);
 
   useEffect(() => {
     if (state?.success) {
@@ -18,17 +21,14 @@ export default function LogoutComponent() {
       updateUser(undefined);
       router.push(pathConstants.login);
     }
-  }, [state, router, updateToken, updateUser]);
+    setIsP(pending);
+  }, [state, router, updateToken, updateUser, setIsP, pending]);
 
   return (
     <form action={formAction}>
-      <ButtonComponent
-        name="Logout"
-        width="fit"
-        type="submit"
-        pending={pending}
-        theme="outlined"
-      />
+      <Button variant={'outline'}>
+        {isP ? <LoadingComponent /> : <LogOut />}
+      </Button>
     </form>
   );
 }

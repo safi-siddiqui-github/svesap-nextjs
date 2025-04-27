@@ -2,7 +2,7 @@
 
 import { pathConstants } from '@/constants/pathConstants';
 import { AxiosResponseType, ResponseResultType } from '@/types/responseTypes';
-import axiosUtils from '@/utils/axiosUtils';
+import { axiosUtils } from '@/utils/axiosUtils';
 import {
   createCategoryValidation,
   deleteCategoryValidation,
@@ -14,26 +14,35 @@ export const createCategoryAction = async (
 ): Promise<ResponseResultType> => {
   const name = formData.get('name') as string;
   const description = formData.get('description') as string;
+  const image = formData.get('image') as File;
   const old: ResponseResultType['old'] = { name, description };
 
   const validatedFields = createCategoryValidation.safeParse({
     name,
     description,
+    image,
   });
 
   // Return early if the form data is invalid
   if (!validatedFields.success) {
     return {
       success: false,
-      errors: validatedFields.error.flatten().fieldErrors,
+      // errors: validatedFields.error.flatten().fieldErrors,
+      errors: {
+        name: 'Someting',
+      },
       old,
     };
   }
 
-  let res = await axiosUtils.post(pathConstants.api.post.categoryCreate, {
-    name,
-    description,
-  });
+  if (image?.size == 0) {
+    formData.delete('image');
+  }
+
+  let res = await axiosUtils.post(
+    pathConstants.api.post.categoryCreate,
+    formData
+  );
 
   const resData: AxiosResponseType = res?.data;
 
@@ -44,6 +53,8 @@ export const createCategoryAction = async (
       old,
     };
   }
+
+  console.log(resData?.data?.category);
 
   return {
     success: true,
@@ -61,15 +72,16 @@ export const allCategoriesAction = async (): Promise<ResponseResultType> => {
   };
 };
 
-export const trashedCategoriesAction = async (): Promise<ResponseResultType> => {
-  let res = await axiosUtils.get(pathConstants.api.get.categoryTrashed);
-  const resData: AxiosResponseType = res?.data;
+export const trashedCategoriesAction =
+  async (): Promise<ResponseResultType> => {
+    let res = await axiosUtils.get(pathConstants.api.get.categoryTrashed);
+    const resData: AxiosResponseType = res?.data;
 
-  return {
-    success: true,
-    data: resData.data,
+    return {
+      success: true,
+      data: resData.data,
+    };
   };
-};
 
 export const deleteCategoryAction = async (
   _: ResponseResultType,
@@ -85,7 +97,9 @@ export const deleteCategoryAction = async (
   if (!validatedFields.success) {
     return {
       success: false,
-      errors: validatedFields.error.flatten().fieldErrors,
+      errors: {
+        id: 'Someting',
+      },
     };
   }
 
@@ -122,7 +136,9 @@ export const recoverCategoryAction = async (
   if (!validatedFields.success) {
     return {
       success: false,
-      errors: validatedFields.error.flatten().fieldErrors,
+      errors: {
+        id: 'Someting',
+      },
     };
   }
 

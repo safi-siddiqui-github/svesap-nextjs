@@ -1,23 +1,35 @@
 'use client';
 
 import { ResponseResultType } from '@/types/responseTypes';
+import { ArchiveRestore, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect } from 'react';
-import ButtonComponent from '../button/ButtonComponent';
+import { Button } from './button';
+import LoadingComponent from './LoadingComponent';
 
 type ActionDataComponentType = {
   action: (
     _: ResponseResultType,
     formData: FormData
   ) => Promise<ResponseResultType>;
-  name: string;
   redirect: string;
   id?: string;
+  variant?:
+    | 'link'
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | null
+    | undefined;
+
+  work: 'delete' | 'recover';
 };
 
 export default function ActionDataComponent(props: ActionDataComponentType) {
   const router = useRouter();
-  const { action, name, redirect, id } = props;
+  const { action, redirect, id, variant, work } = props;
   const [state, formAction, pending] = useActionState(action, {});
 
   useEffect(() => {
@@ -26,16 +38,24 @@ export default function ActionDataComponent(props: ActionDataComponentType) {
     }
   }, [state, router, redirect]);
 
+  let icon = null;
+  switch (work) {
+    case 'delete':
+      icon = <Trash2 />;
+      break;
+    case 'recover':
+      icon = <ArchiveRestore />;
+      break;
+
+    default:
+      break;
+  }
+
   return (
     <form action={formAction}>
       <input type="hidden" name="id" defaultValue={id} />
-      <ButtonComponent
-        name={name}
-        width="fit"
-        type="submit"
-        pending={pending}
-        theme="outlined"
-      />
+
+      <Button variant={variant}>{pending ? <LoadingComponent /> : icon}</Button>
     </form>
   );
 }

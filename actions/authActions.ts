@@ -1,54 +1,73 @@
 'use server';
 
 import { pathConstants } from '@/constants/pathConstants';
-import { AxiosResponseType, ResponseResultType } from '@/types/responseTypes';
-import axiosUtils from '@/utils/axiosUtils';
-import { loginValidation } from '@/validations/authValidations';
+import { AxiosResponseType } from '@/types/responseTypes';
+import { axiosErrorHandle, axiosUtils } from '@/utils/axiosUtils';
 import { cookies } from 'next/headers';
 
-export const loginAction = async (
-  _: ResponseResultType,
-  formData: FormData
-): Promise<ResponseResultType> => {
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
-  const old: ResponseResultType['old'] = { email, password };
+// export const loginAction = async (
+//   _: ResponseResultType,
+//   formData: FormData
+// ): Promise<ResponseResultType> => {
+//   const email = formData.get('email') as string;
+//   const password = formData.get('password') as string;
+//   const old: ResponseResultType['old'] = { email, password };
 
-  const validatedFields = loginValidation.safeParse({
-    email,
-    password,
-  });
+//   // const validatedFields = loginValidation.safeParse({
+//   //   email,
+//   //   password,
+//   // });
 
-  // Return early if the form data is invalid
-  if (!validatedFields.success) {
-    return {
-      success: false,
-      errors: validatedFields.error.flatten().fieldErrors,
-      old,
-    };
+//   // Return early if the form data is invalid
+//   // if (!validatedFields.success) {
+//   //   return {
+//   //     success: false,
+//   //     errors: validatedFields.error.flatten().fieldErrors,
+//   //     old,
+//   //   };
+//   // }
+
+//   let res = await axiosUtils.post(pathConstants.api.post.login, {
+//     email,
+//     password,
+//   });
+
+//   const resData: AxiosResponseType = res?.data;
+
+//   if (!resData.success) {
+//     return {
+//       success: false,
+//       errors: resData.errors,
+//       old,
+//     };
+//   }
+
+//   await setCookie(resData);
+
+//   return {
+//     success: true,
+//     data: resData.data,
+//   };
+// };
+
+export const loginAction = async (values: {
+  email: string;
+  password: string;
+}): Promise<AxiosResponseType> => {
+  //
+  try {
+    const res: AxiosResponseType = (
+      await axiosUtils.post(pathConstants.api.post.login, values)
+    )?.data;
+
+    if (res.success) {
+      await setCookie(res);
+    }
+    return res;
+    //
+  } catch (error) {
+    return axiosErrorHandle(error);
   }
-
-  let res = await axiosUtils.post(pathConstants.api.post.login, {
-    email,
-    password,
-  });
-
-  const resData: AxiosResponseType = res?.data;
-
-  if (!resData.success) {
-    return {
-      success: false,
-      errors: resData.errors,
-      old,
-    };
-  }
-
-  await setCookie(resData);
-
-  return {
-    success: true,
-    data: resData.data,
-  };
 };
 
 const setCookie = async (resData: AxiosResponseType) => {
